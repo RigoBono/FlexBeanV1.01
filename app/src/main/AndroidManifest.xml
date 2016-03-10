@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="com.example.ultron.myapplication">
+
+    <uses-permission android:name="android.permission.GET_ACCOUNTS" />
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.BLUETOOTH" />
+    <uses-permission android:name="android.pe.rmission.VIBRATE" />
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.BLUETOOTH_ADMIN" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+
+    <application
+        android:allowBackup="true"
+        android:hardwareAccelerated="false"
+        android:icon="@drawable/flex"
+        android:label="@string/app_name"
+        android:largeHeap="true"
+        android:screenOrientation="locked"
+        android:theme="@style/AppTheme">
+        <activity
+            android:name=".Splash"
+            android:exported="true"
+            android:label="@string/app_name"
+            android:screenOrientation="locked">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+        <activity
+            android:name=".configuracion"
+            android:label="@string/Configuracion"
+            android:screenOrientation="locked" />
+        <activity
+            android:name=".Graficas"
+            android:label="@string/title_activity_graficas"
+            android:screenOrientation="locked" />
+        <activity
+            android:name=".DatosPersonales"
+            android:label="@string/perfil"
+            android:screenOrientation="locked" />
+        <activity
+            android:name=".MainActivity"
+            android:label="@string/Conectando"
+            android:screenOrientation="locked" />
+
+        <meta-data
+            android:name="com.google.android.gms.version"
+            android:value="@integer/google_play_services_version" />
+
+        <activity
+            android:name=".GraficasPro"
+            android:label="@string/title_activity_graficas_pro"
+            android:screenOrientation="locked"
+            android:theme="@style/AppTheme.NoActionBar" />
+        <activity
+            android:name=".Historial"
+            android:label="@string/Historial"
+            android:screenOrientation="locked"
+            android:theme="@style/AppTheme.NoActionBar" />
+        <activity
+            android:name=".graficaMain"
+            android:label="@string/title_activity_grafica_main"
+            android:theme="@style/AppTheme.NoActionBar"></activity>
+    </application>
+
+</manifest>

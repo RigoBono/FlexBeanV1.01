@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <group android:checkableBehavior="single">
+
+        <item
+            android:id="@+id/nav_perfil"
+            android:icon="@drawable/home_alt"
+            android:title="@string/perfil" >
+        </item>
+        <item
+            android:id="@+id/nav_capturar"
+            android:icon="@drawable/ic_menu_camera"
+            android:title="@string/Pantallazo" />
+        <item
+            android:id="@+id/nav_reporte"
+            android:icon="@drawable/pdf"
+            android:title="@string/reporte" />
+        <item
+            android:id="@+id/nav_herramientas"
+            android:icon="@drawable/ic_menu_manage"
+            android:title="@string/herramientas" />
+        <item
+            android:id="@+id/apagar"
+            android:icon="@drawable/imagenapagado"
+            android:title="Shutdown" />
+    </group>
+
+    <item android:title="@string/compartir">
+        <menu>
+            <item
+                android:id="@+id/nav_compartir"
+                android:icon="@drawable/ic_menu_share"
+                android:title="@string/compartirI" />
+        </menu>
+    </item>
+
+</menu>

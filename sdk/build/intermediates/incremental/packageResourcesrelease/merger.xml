@@ -1,0 +1,2 @@
+<?xml version="1.0" encoding="utf-8"?>
+<merger version="3"><dataSet config="main"><source path="/home/ultron/Android Studio Projects/FlexBean/sdk/src/main/res"/><source path="/home/ultron/Android Studio Projects/FlexBean/sdk/build/generated/res/rs/release"/><source path="/home/ultron/Android Studio Projects/FlexBean/sdk/build/generated/res/resValues/release"/></dataSet><dataSet config="release"><source path="/home/ultron/Android Studio Projects/FlexBean/sdk/src/release/res"/></dataSet><mergedItems/></merger>
