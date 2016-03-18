@@ -284,7 +284,8 @@ public class MainActivity extends AppCompatActivity
                             {
                                 Snackbar.make(vista, bean.getDevice().getName() + " Connected", Snackbar.LENGTH_LONG).setAction("Action", null).show();
                                 banderaConectado=true;
-                                bean.disconnect();
+                                //bean.disconnect();
+
                                 bean.readDeviceInfo(new Callback<DeviceInfo>()
                                 {
                                     @Override
@@ -493,14 +494,14 @@ public class MainActivity extends AppCompatActivity
         contador();
 
         hilo();
-        /*if (!banderaConectado) {
+        if (!banderaConectado) {
             banderaConectado = true;
             Intent intent = new Intent(getApplicationContext(), graficaMain.class);
             startActivity(intent);
-        }*/
-       /* Mensajero msj = new Mensajero(getApplicationContext());
+        }
+        Mensajero msj = new Mensajero(getApplicationContext());
         Thread hilo1 = new Thread(msj);
-        hilo1.start();*/
+        hilo1.start();
 
         BeanDiscoveryListener listener = new BeanDiscoveryListener() {
             @Override
