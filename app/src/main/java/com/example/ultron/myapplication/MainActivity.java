@@ -244,14 +244,16 @@ public class MainActivity extends AppCompatActivity
                     Log.e("A1", LecturaA1);
                     Log.e("TODO", Lectura + " " + LecturaA0 + " " + LecturaA1);
                     DataBaseManager dbm=new DataBaseManager(getApplicationContext());
-                    dbm.db.execSQL("INSERT INTO InformacionPorTiempos(Tiempo, LecturaA0, LecturaA1) VALUES('" + Lectura + "','" + LecturaA0 + "','" + LecturaA1 + "');");
-                    Log.i("prolog",Integer.toString(dbm.Lectura()));
-                    dbm.actualizaA0();
-                    dbm.db.close();
+                    if(dbm.cuentaDatos()>2000){
+                        beanLectura bl=new beanLectura(getApplicationContext());
+                        Lectura=Integer.toString(bl.BPM);
+                        dbm.db.execSQL("INSERT INTO InformacionPorTiempos(Tiempo,LecturaA0,LecturaA1) VALUES('" + Lectura + "','" + LecturaA0 + "','" + LecturaA1 + "');");
+                        dbm.db.close();
+                    }else
+                        dbm.db.close();
                 } catch (Exception e) {
-                    Log.i("SAL,",e.getMessage());
+                    //Log.i("SAL,",e.getMessage().toString());
                 }
-
             }
 
             public void onTick(long millisUntilFinished)
@@ -494,14 +496,15 @@ public class MainActivity extends AppCompatActivity
         contador();
 
         hilo();
-        if (!banderaConectado) {
+        /*if (!banderaConectado) {
             banderaConectado = true;
             Intent intent = new Intent(getApplicationContext(), graficaMain.class);
             startActivity(intent);
         }
         Mensajero msj = new Mensajero(getApplicationContext());
         Thread hilo1 = new Thread(msj);
-        hilo1.start();
+        hilo1.start();*/
+
 
         BeanDiscoveryListener listener = new BeanDiscoveryListener() {
             @Override

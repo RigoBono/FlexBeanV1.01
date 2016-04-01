@@ -23,15 +23,15 @@ public class Mensajero implements Runnable {
         while(true){
             //Obtener datos
             String prev="*10*";
-            for(int i=0;i<200;i++){
-                prev=prev+Integer.toString((int)(Math.random()*700 + 500))+"|";
+            for(int i=0;i<50;i++){
+                if(i==10)
+                    prev=prev+"700"+"|";
+                else
+                    prev=prev+"200"+"|";
             }
             prev=prev+"*";
             Log.i("CADENA",prev);
-
             Random rd=new Random();
-            //String cadena = Integer.toString((int)(Math.random()*700 + 500)) + "|" + Integer.toString((int)(Math.random()*1024 + 1)) + "|" + Integer.toString((int)(Math.random()*1024 + 1));
-
             BeanPro bp=new BeanPro(contexto,prev);
             Log.i("CADENA",bp.salida);
             StringTokenizer tknP = new StringTokenizer(bp.salida, "|");
@@ -45,9 +45,15 @@ public class Mensajero implements Runnable {
             Log.i("A1", LecturaA1);
             Log.i("TODO", Lectura + " " + LecturaA0 + " " + LecturaA1);
             DataBaseManager dbm=new DataBaseManager(contexto);
-            dbm.db.execSQL("INSERT INTO InformacionPorTiempos(Tiempo,LecturaA0,LecturaA1) VALUES('"+Lectura+"','"+LecturaA0+"','"+LecturaA1+"');");
+            if(dbm.cuentaDatos()>2000){
+                beanLectura bl=new beanLectura(contexto);
+                Lectura=Integer.toString(bl.BPM);
+                Log.i("Paso-la prueba","Paso");
+                dbm.db.execSQL("INSERT INTO InformacionPorTiempos(Tiempo,LecturaA0,LecturaA1) VALUES('"+Lectura+"','"+LecturaA0+"','"+LecturaA1+"');");
+                dbm.db.close();
+            }
             try {
-                Thread.sleep(10);
+                Thread.sleep(200);
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }

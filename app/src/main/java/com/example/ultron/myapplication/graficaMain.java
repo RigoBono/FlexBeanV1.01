@@ -52,6 +52,7 @@ public class graficaMain extends AppCompatActivity
     private LineChart mChart;
     Vector<Integer> datos=new Vector<Integer>();
     int cont=0;
+    int T=500;
     View vista;
     int prom=0;
     @Override
@@ -98,6 +99,7 @@ public class graficaMain extends AppCompatActivity
         mChart.setDragEnabled(true);
         mChart.setScaleEnabled(true);
         mChart.setDrawGridBackground(false);
+        mChart.setDescription("");
 
         mChart.setPinchZoom(true);
 
@@ -149,21 +151,45 @@ public class graficaMain extends AppCompatActivity
             }
         }).start();*/
         hiloPro();
+        dibujante();
 
     }
 
 
+    public void dibujante(){
+        new CountDownTimer(500,T/2){
+
+            @Override
+            public void onTick(long millisUntilFinished) {
+                addEntry(400);
+                addEntry(500);
+                addEntry(600);
+                addEntry(300);
+                addEntry(350);
+                addEntry(200);
+                addEntry(200);
+                addEntry(200);
+            }
+
+            @Override
+            public void onFinish() {
+                addEntry(200);
+
+            }
+        }.start();
+    }
+
+
     public void hiloPro(){
-        new CountDownTimer(1000,10){
+        new CountDownTimer(1000,200){
 
             @Override
             public void onTick(long millisUntilFinished)
             {
                 try{
-                    addEntry(datos.elementAt(cont));
-                    cont++;
-                    if(cont>99){
-                        cont=0;
+                    for(int i=0;i<datos.size();i++) {
+                        addEntry(datos.elementAt(i));
+
                     }
                 }catch(Exception e){
                     cont=0;
@@ -172,17 +198,56 @@ public class graficaMain extends AppCompatActivity
 
 
                 int bpm=0;
-                Cursor c=dbm.db.rawQuery("SELECT Tiempo FROM InformacionPorTiempos ORDER BY TiempoInsercion DESC LIMIT 20;",null);
-                if (c.moveToFirst()) {
-                    do {
-                        bpm =bpm+ Integer.parseInt(c.getString(0));
-
-                    } while (c.moveToNext());
-                }
                 TextView txt=(TextView)findViewById(R.id.beatsSalida);
-                txt.setText(Integer.toString((bpm * 60) / 10));
-                dbm.db.execSQL("INSERT INTO Informacion(Lectura) VALUES(" + Integer.toString((bpm * 60) / 10) + ");");
-                c.close();
+                if(dbm.cuentaDatos()>2000){
+                    //Cursor c=dbm.db.rawQuery("SELECT SUM(Tiempo) FROM InformacionPorTiempos WHERE DATETIME(TiempoInsercion)>DATETIME('now','-1 minutes');",null);
+                    Cursor c=dbm.db.rawQuery("SELECT Tiempo FROM InformacionPorTiempos ORDER BY TiempoInsercion DESC",null);
+                    c.moveToFirst();
+                    if (c.getCount()>0) {
+
+                        do {
+                            bpm =Integer.parseInt(c.getString(0));
+                            break;
+                        } while (c.moveToNext());
+                        Log.i("ProDatos", Integer.toString(bpm));
+                        txt.setText(Integer.toString(bpm));
+                        if(bpm<30 || bpm>140) {
+                            txt.setText("99%");
+                            /*Cursor c1 = dbm.db.rawQuery("SELECT SUM(Tiempo) FROM InformacionPorTiempos WHERE DATETIME(TiempoInsercion)>DATETIME('now','-5 seconds');", null);
+                            int frec=0;
+                            if (c1.moveToFirst()) {
+                                do {
+                                    frec =Integer.parseInt(c1.getString(0));
+                                } while (c1.moveToNext());
+                                Log.i("Frecuencia",Integer.toString(frec));
+                                try{
+                                    bpm=60000/(5000/frec);
+                                    if(bpm>130){
+                                        txt.setText("99%");
+                                    }else
+                                        txt.setText(Integer.toString(bpm));
+                                }catch (Exception e){
+                                    txt.setText("99%");
+                                }
+
+                                }*/
+                        }
+
+                        c.close();
+                    }else{
+                        txt.setText("-%");
+                        Snackbar.make(vista, "processing data, please wait", Snackbar.LENGTH_LONG).setAction("Action", null).show();
+                        T=1000;
+                    }
+
+                }else{
+                    double pc=(dbm.cuentaDatos()*100)/2000;
+                    T=1000;
+                    txt.setText(Double.toString(pc)+"%");
+                    addEntry(50);
+                }
+                dbm.db.execSQL("INSERT INTO Informacion(Lectura) VALUES(" + Integer.toString(bpm) + ");");
+
                 Cursor c1=dbm.db.rawQuery("SELECT AVG(Lectura) FROM Informacion ORDER BY TiempoInsercion DESC LIMIT 10;", null);
                 float bpm2=0;
                 if (c1.moveToFirst()) {
@@ -194,11 +259,12 @@ public class graficaMain extends AppCompatActivity
                 }
                 TextView txta=(TextView)findViewById(R.id.TextAverage);
                 txta.setText("AVG:"+Float.toString(bpm2));
+                datos.clear();
                 datos=dbm.actualizaVector();
 
                 dbm.db.close();
                 c1.close();
-                c.close();
+                //c.close();
 
 
 
@@ -258,6 +324,8 @@ public class graficaMain extends AppCompatActivity
         set.setDrawCircles(false);
         set.disableDashedLine();
         set.setDrawCircleHole(false);
+
+
         return set;
     }
 

@@ -95,7 +95,7 @@ public class DataBaseManager
     public double consultaAnalogo0()
     {
         double sal=0;
-        Cursor pro= db.rawQuery("select LecturaA0, TiempoInsercion from Informacion  ORDER BY TiempoInsercion DESC;", null);
+        Cursor pro= db.rawQuery("select LecturaA0, TiempoInsercion from InformacionPorTiempos   ORDER BY TiempoInsercion DESC;", null);
         if (pro.moveToFirst()) {
             do {
                 sal=pro.getDouble(0);
@@ -127,7 +127,7 @@ public class DataBaseManager
     public double consultaAnalogo1()
     {
         double sal=0;
-        Cursor pro= db.rawQuery("select LecturaA1, TiempoInsercion from Informacion  ORDER BY TiempoInsercion DESC;", null);
+        Cursor pro= db.rawQuery("select LecturaA1, TiempoInsercion from InformacionPorTiempos  ORDER BY TiempoInsercion DESC;", null);
         if (pro.moveToFirst()) {
             do {
                 sal=pro.getDouble(0);
@@ -239,7 +239,7 @@ public class DataBaseManager
 
     public Vector<Integer> actualizaVector(){
         Vector<Integer> vec=new Vector<Integer>();
-        Cursor C=db.rawQuery("SELECT Dato FROM Dato ORDER BY TiempoInsercion DESC LIMIT 200;",null);
+        Cursor C=db.rawQuery("SELECT Dato FROM Dato ORDER BY TiempoInsercion DESC LIMIT 20;",null);
         if (C.moveToFirst()) {
             do {
                 int res = Integer.parseInt(C.getString(0));
@@ -333,6 +333,33 @@ public class DataBaseManager
             } while (data1.moveToNext());
         }
         Log.i("INFOPRO",Integer.toString(res));
+        data1.close();
+        return res;
+    }
+
+    public int cuentaDatos(){
+        Cursor data1=db.rawQuery("SELECT COUNT(Dato),TiempoInsercion  FROM Dato  ORDER BY TiempoInsercion DESC",null);
+        int res=0;
+        if (data1.moveToFirst()) {
+            do {
+                res = Integer.parseInt(data1.getString(0));
+                break;
+            } while (data1.moveToNext());
+        }
+        Log.i("Datos->",Integer.toString(res));
+        data1.close();
+        return res;
+    }
+
+    public Vector<Integer> datos(){
+        Cursor data1=db.rawQuery("SELECT Dato  FROM Dato  ORDER BY TiempoInsercion DESC LIMIT 6000",null);
+        Vector<Integer> res=new Vector<Integer>();
+        if (data1.moveToFirst()) {
+            do {
+                res.add(Integer.parseInt(data1.getString(0)));
+            } while (data1.moveToNext());
+        }
+        Log.i("Datos->",Integer.toString(res.size()));
         data1.close();
         return res;
     }

@@ -39,7 +39,7 @@ public class BeanPro {
 
         String parte=tkn.nextToken();
         String parte2=tkn.nextToken();
-        Log.i("PASO",parte);
+        Log.i("PASO",parte2);
         A1=parte;
         BPM=lecturas(parte2);
 
@@ -62,18 +62,20 @@ public class BeanPro {
 
     public String lecturas(String envio){
         StringTokenizer tkn=new StringTokenizer(envio,"|");
-
-        for(int i=0;i<tkn.countTokens();i++){
+        Log.i("Paso 2",Integer.toString(tkn.countTokens()));
+        int i=0;
+        while (tkn.hasMoreElements()){
             int aux=Integer.parseInt(tkn.nextToken().toString());
             dato prevA=new dato();
             prevA.index=i;
+            i++;
             prevA.lectura=aux;
             DataBaseManager dbm=new DataBaseManager(contexto);
             dbm.db.execSQL("INSERT INTO Dato(Dato) VALUES("+Integer.toString(prevA.lectura)+");");
             dbm.db.close();
             lec.add(prevA);
         }
-        Log.i("IdPro",Integer.toString(lec.size()));
+        Log.i("IdPro",Integer.toString(i));
         return Integer.toString(bpm());
     }
 
@@ -90,14 +92,13 @@ public class BeanPro {
 
     public int bpm(){
         int bpm=0;
-        int prom=promedioUltimosDiez();
-        ordenaMuestra(2);
-        for(int i=0;i<lec.size();i++){
-            if(lec.elementAt(i).lectura>prom){
+        for(int i=0;i<lec.size();i++)
+        {
+            if(lec.elementAt(i).lectura>650){
                 bpm++;
-                if(bpm==3)
-                    break;
             }
+            if(bpm==3)
+                break;
         }
         A0=Integer.toString(lec.lastElement().lectura);
         return bpm;
