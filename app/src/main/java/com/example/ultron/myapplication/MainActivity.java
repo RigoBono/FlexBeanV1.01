@@ -224,7 +224,7 @@ public class MainActivity extends AppCompatActivity
     //Hilo de verdad
     public void hilo()
     {
-        new CountDownTimer(1000, 50)
+        new CountDownTimer(1000, 200)
         {
             public void separaEntrada(byte[] datos)
             {
@@ -245,7 +245,7 @@ public class MainActivity extends AppCompatActivity
                     Log.e("TODO", Lectura + " " + LecturaA0 + " " + LecturaA1);
                     DataBaseManager dbm=new DataBaseManager(getApplicationContext());
                     if(dbm.cuentaDatos()>2000){
-                        beanLectura bl=new beanLectura(getApplicationContext());
+                        beanLectura bl=new beanLectura(getApplicationContext(),dbm.limiteSup());
                         Lectura=Integer.toString(bl.BPM);
                         dbm.db.execSQL("INSERT INTO InformacionPorTiempos(Tiempo,LecturaA0,LecturaA1) VALUES('" + Lectura + "','" + LecturaA0 + "','" + LecturaA1 + "');");
                         dbm.db.close();
@@ -468,12 +468,15 @@ public class MainActivity extends AppCompatActivity
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        hiloConexion h1 = new hiloConexion();
-        Thread hiloP = new Thread(h1);
-        hiloP.start();
+        //hiloConexion h1 = new hiloConexion();
+        //Thread hiloP = new Thread(h1);
+        //hiloP.start();
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        DataBaseManager dbm = new DataBaseManager(getApplicationContext());
+        //banderaConectado = true;
+        Intent intent = new Intent(getApplicationContext(), graficaMain.class);
+        startActivity(intent);
+        /*DataBaseManager dbm = new DataBaseManager(getApplicationContext());
         dbm.EliminarBase();
         vista = this.getWindow().getDecorView().findViewById(android.R.id.content);
         Snackbar.make(vista, "Searching for devices ", Snackbar.LENGTH_LONG).setAction("Action", null).show();
@@ -506,7 +509,7 @@ public class MainActivity extends AppCompatActivity
         hilo1.start();*/
 
 
-        BeanDiscoveryListener listener = new BeanDiscoveryListener() {
+       /* BeanDiscoveryListener listener = new BeanDiscoveryListener() {
             @Override
             public void onBeanDiscovered(Bean bean, int rssi) {
                 beans.add(bean);
@@ -523,7 +526,7 @@ public class MainActivity extends AppCompatActivity
                 }
             }
         };
-        BeanManager.getInstance().startDiscovery(listener);
+        BeanManager.getInstance().startDiscovery(listener);*/
     }
 
     @Override

@@ -74,6 +74,25 @@ public class DataBaseManager
 
     }
 
+    public int limiteSup(){
+        String rt="15";
+        Cursor datos=db.rawQuery("SELECT Limite FROM LimitesSen;", null);
+        if (datos.moveToFirst()) {
+            do {
+                rt=datos.getString(0);
+                break;
+            } while (datos.moveToNext());
+        }
+        datos.close();
+        int ret=Integer.parseInt(rt);
+        return ret;
+    }
+
+    public boolean limiteNuevo(int limite){
+        db.execSQL("UPDATE LimitesSen SET Limite="+Integer.toString(limite)+";");
+        return true;
+    }
+
     public String fecha(){
         String rep="";
         Cursor rp=db.rawQuery("select strftime('%Y-%m-%d',TiempoInsercion,'localtime') as lapso from Informacion GROUP BY lapso ORDER BY lapso DESC;",null);

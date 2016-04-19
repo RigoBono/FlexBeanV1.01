@@ -2,6 +2,7 @@ package com.example.ultron.myapplication;
 
 import android.content.Context;
 import android.provider.ContactsContract;
+import android.util.Log;
 
 import java.util.Vector;
 
@@ -11,10 +12,12 @@ import java.util.Vector;
 public class beanLectura {
     Vector<Integer> datos=new Vector<Integer>();
     int BPM=0;
-    public beanLectura(Context context){
+    int umbral;
+    public beanLectura(Context context,int umbralP){
         DataBaseManager dbm=new DataBaseManager(context);
         datos=dbm.datos();
         BPM=bpm();
+        umbral=umbralP;
     }
 
     public double promedio(){
@@ -26,9 +29,12 @@ public class beanLectura {
 
     public int bpm(){
         int bpm=0;
-        for(int i=0;i<datos.size();i++)
-            if(datos.elementAt(i)>((promedio()/4)*5))
+        Log.i("PasoBPM", Integer.toString(datos.size()));
+        for(int i=0;i<datos.size();i++) {
+            if (datos.elementAt(i) <5 )
                 bpm++;
+        }
+
         return bpm;
     }
 }

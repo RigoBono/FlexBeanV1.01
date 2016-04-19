@@ -31,7 +31,7 @@ public class Splash extends Activity
 
     public void tiempo()
     {
-        new CountDownTimer(5000, 1000)
+        new CountDownTimer(2000, 1000)
         {
             public void onTick(long millisUntilFinished) { }
 
@@ -72,7 +72,7 @@ public class Splash extends Activity
                     tiempo();
                 else
                 {
-                    Intent intento = new Intent(getApplicationContext(), MainActivity.class);
+                    Intent intento = new Intent(getApplicationContext(), graficaMain.class);
                     startActivity(intento);
                 }
             }

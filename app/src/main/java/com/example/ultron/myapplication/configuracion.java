@@ -20,6 +20,7 @@ import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.ExpandableListView;
 import android.widget.ImageView;
+import android.widget.SeekBar;
 import android.widget.Switch;
 import android.widget.Toast;
 
@@ -51,6 +52,8 @@ public class configuracion extends AppCompatActivity {
 
         getSupportActionBar().setBackgroundDrawable(new ColorDrawable(Color.parseColor("#ff779ecb")));
 
+        SeekBar seekBar=(SeekBar)findViewById(R.id.seekBar);
+
         final CheckBox c = (CheckBox) findViewById(R.id.chkA0);
         final CheckBox c1 = (CheckBox) findViewById(R.id.chkA1);
         final CheckBox c2 = (CheckBox) findViewById(R.id.chkD1);
@@ -59,6 +62,75 @@ public class configuracion extends AppCompatActivity {
         final CheckBox c5 = (CheckBox) findViewById(R.id.chkD4);
         final CheckBox c6 = (CheckBox) findViewById(R.id.chkD5);
         final CheckBox c7 = (CheckBox) findViewById(R.id.chkD6);
+
+        DataBaseManager dbm1=new DataBaseManager(getApplicationContext());
+        int umbralActual=dbm1.limiteSup();
+        seekBar.setProgress(umbralActual);
+        dbm1.db.close();
+
+        seekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+            @Override
+            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+                int umbral=10;
+                if(progress>0 && progress<10){
+                    umbral=10;
+                }else if(progress>=10 && progress<20){
+                    umbral=15;
+                }else if(progress>=20 && progress<30){
+                    umbral=20;
+                }else if(progress>=30 && progress<40){
+                    umbral=25;
+                }else if(progress>=50 && progress<60){
+                    umbral=30;
+                }else if(progress>=60 && progress<70){
+                    umbral=35;
+                }else if(progress>=70 && progress<80){
+                    umbral=40;
+                }else if(progress>=80 && progress<90){
+                    umbral=50;
+                }else if(progress>=90 && progress<100){
+                    umbral=640;
+                }
+
+            }
+
+            @Override
+            public void onStartTrackingTouch(SeekBar seekBar) {
+
+            }
+
+            @Override
+            public void onStopTrackingTouch(SeekBar seekBar) {
+
+                int umbral=10;
+                int progress=seekBar.getProgress();
+                if(progress>0 && progress<10){
+                    umbral=10;
+                }else if(progress>=10 && progress<20){
+                    umbral=15;
+                }else if(progress>=20 && progress<30){
+                    umbral=20;
+                }else if(progress>=30 && progress<40){
+                    umbral=25;
+                }else if(progress>=50 && progress<60){
+                    umbral=30;
+                }else if(progress>=60 && progress<70){
+                    umbral=35;
+                }else if(progress>=70 && progress<80){
+                    umbral=40;
+                }else if(progress>=80 && progress<90){
+                    umbral=50;
+                }else if(progress>=90 && progress<100){
+                    umbral=640;
+                }
+
+                DataBaseManager dbm=new DataBaseManager(getApplicationContext());
+                dbm.limiteNuevo(umbral);
+                dbm.db.close();
+                Toast.makeText(getApplicationContext()," "+umbral,Toast.LENGTH_SHORT).show();
+
+            }
+        });
         /*c2.setChecked(true);
         c3.setChecked(true);
         c4.setChecked(true);

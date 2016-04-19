@@ -24,6 +24,9 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
+import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -40,10 +43,22 @@ import com.lowagie.text.Document;
 import com.lowagie.text.DocumentException;
 import com.lowagie.text.pdf.PdfPTable;
 import com.lowagie.text.pdf.PdfWriter;
+import com.punchthrough.bean.sdk.Bean;
+import com.punchthrough.bean.sdk.BeanDiscoveryListener;
+import com.punchthrough.bean.sdk.BeanListener;
+import com.punchthrough.bean.sdk.BeanManager;
+import com.punchthrough.bean.sdk.message.BeanError;
+import com.punchthrough.bean.sdk.message.Callback;
+import com.punchthrough.bean.sdk.message.DeviceInfo;
+import com.punchthrough.bean.sdk.message.ScratchBank;
 
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.StringTokenizer;
 import java.util.Vector;
 
 public class graficaMain extends AppCompatActivity
@@ -55,13 +70,224 @@ public class graficaMain extends AppCompatActivity
     int T=500;
     View vista;
     int prom=0;
+    private Toolbar toolbar;
+    boolean bandConectado=false;
+    private ListView listView;
+    ArrayList frijoles=new ArrayList();
+    final List<Bean> beans = new ArrayList<>();
+    Bean frijolMaster;
+    boolean bandCalibra=false;
+
+    public void hiloConexion(){
+        new CountDownTimer(10000,10){
+
+            @Override
+            public void onTick(long millisUntilFinished) {
+
+            }
+
+            @Override
+            public void onFinish() {
+
+            }
+        }.start();
+    }
+
+    public void hilo()
+    {
+        new CountDownTimer(1000, 5)
+        {
+            public void onTick(long millisUntilFinished)
+            {
+                listView.setOnItemClickListener(new AdapterView.OnItemClickListener()
+                {
+                    boolean isNumeric(String cadena)
+                    {
+                        try
+                        {
+                            Integer.parseInt(cadena);
+                            return true;
+                        }
+                        catch (NumberFormatException nfe)
+                        {
+                            return false;
+                        }
+                    }
+
+                    @Override
+                    public void onItemClick(AdapterView<?> parent, View view, int position, long id)
+                    {
+                        Snackbar.make(vista, listView.getItemAtPosition(position).toString() + " Connecting", Snackbar.LENGTH_LONG).setAction("Action", null).show();
+                        final Bean bean = beans.get(position);
+                        frijolMaster=bean;
+                        BeanListener beanListener = new BeanListener()
+                        {
+                            @Override
+                            public void onConnected()
+                            {
+                                Snackbar.make(vista, bean.getDevice().getName() + " Connected", Snackbar.LENGTH_LONG).setAction("Action", null).show();
+                                bandConectado=true;
+                                bean.readDeviceInfo(new Callback<DeviceInfo>()
+                                {
+                                    @Override
+                                    public void onResult(DeviceInfo deviceInfo) { }
+                                });
+                                setupGrafica();
+                                /*Intent intent;
+                                intent = new Intent(getApplicationContext(), graficaMain.class);
+                                startActivity(intent);*/
+                            }
+
+                            @Override
+                            public void onConnectionFailed()
+                            {
+                                Snackbar.make(vista, "Connection Failed", Snackbar.LENGTH_LONG).setAction("Action", null).show();
+
+                            }
+
+                            @Override
+                            public void onDisconnected()
+                            {
+                                Snackbar.make(vista, bean.getDevice().getName().toString() + " disconnected", Snackbar.LENGTH_LONG).setAction("Action", null).show();
+                            }
+
+                            @Override
+                            public void onSerialMessageReceived(byte[] data)
+                            {
+                                //separaEntrada(data);
+                                try {
+                                    String decoded = new String(data, "UTF-8");
+                                    if(isNumeric(decoded)){
+                                        addEntry(Integer.parseInt(decoded));
+                                        TextView txt=(TextView)findViewById(R.id.beatsSalida);
+                                        txt.setText(decoded);
+                                        DataBaseManager dbm=new DataBaseManager(getApplicationContext());
+                                        dbm.db.execSQL("INSERT INTO Informacion(Lectura) VALUES(" + decoded+ ");");
+                                        Cursor c1=dbm.db.rawQuery("SELECT AVG(Lectura) FROM Informacion ORDER BY TiempoInsercion DESC LIMIT 10;", null);
+                                        float bpm2=0;
+                                        if (c1.moveToFirst()) {
+                                            bpm2=0;
+                                            do {
+                                                bpm2 =Float.parseFloat(c1.getString(0));
+
+                                            } while (c1.moveToNext());
+                                        }
+                                        TextView txta=(TextView)findViewById(R.id.TextAverage);
+                                        txta.setText("AVG:"+Float.toString(bpm2));
+                                        dbm.db.close();
+                                        c1.close();
+                                    }else{
+                                        Toast.makeText(getApplicationContext(),"Communication error",Toast.LENGTH_SHORT).show();
+                                    }
+                                } catch (UnsupportedEncodingException e) {
+                                    e.printStackTrace();
+                                }
+                            }
+
+                            @Override
+                            public void onScratchValueChanged(ScratchBank bank, byte[] value) { }
+
+                            @Override
+                            public void onError(BeanError error) { }
+                        };
+
+                        bean.connect(getApplicationContext(), beanListener);
+                    }
+                });
+            }
+
+            public void onFinish()
+            {
+                hilo();
+            }
+        }.start();
+    }
+
+    public void hiloPrueba(){
+        new CountDownTimer(1000,4){
+
+            @Override
+            public void onTick(long millisUntilFinished) {
+                //bandConectado=true;
+                addEntry(67);
+                TextView txt=(TextView)findViewById(R.id.beatsSalida);
+                txt.setText("67");
+                DataBaseManager dbm=new DataBaseManager(getApplicationContext());
+                dbm.db.execSQL("INSERT INTO Informacion(Lectura) VALUES(" + "67"+ ");");
+                Cursor c1=dbm.db.rawQuery("SELECT AVG(Lectura) FROM Informacion ORDER BY TiempoInsercion DESC LIMIT 10;", null);
+                float bpm2=0;
+                if (c1.moveToFirst()) {
+                    bpm2=0;
+                    do {
+                        bpm2 =Float.parseFloat(c1.getString(0));
+
+                    } while (c1.moveToNext());
+                }
+                TextView txta=(TextView)findViewById(R.id.TextAverage);
+                txta.setText("AVG:"+Float.toString(bpm2));
+                dbm.db.close();
+                c1.close();
+            }
+
+            @Override
+            public void onFinish() {
+                hiloPrueba();
+
+            }
+        }.start();
+    }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_grafica_main);
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
+        //Buscar dispositivos
+        if(bandConectado==false){
 
+            setContentView(R.layout.activity_main);
+
+            //getSupportActionBar().setBackgroundDrawable(new ColorDrawable(Color.parseColor("#ff779ecb")));
+            listView = (ListView) findViewById(R.id.listView);
+            vista = this.getWindow().getDecorView().findViewById(android.R.id.content);
+            GifView gifView = (GifView) findViewById(R.id.gif_view);
+            gifView.loadGIFResource(R.drawable.loadingazul);
+
+            BeanDiscoveryListener listener = new BeanDiscoveryListener() {
+                @Override
+                public void onBeanDiscovered(Bean bean, int rssi) {
+                    beans.add(bean);
+                }
+
+                @Override
+                public void onDiscoveryComplete() {
+                    for (Bean bean : beans) {
+                        frijoles.add(bean.getDevice().getName());
+                        Log.i("Frijol", bean.getDevice().getName());
+                        //System.out.println(bean.getDevice().getName());   // "Bean"              (example)
+                        //System.out.println(bean.getDevice().mAddress);    // "B4:99:4C:1E:BC:75" (example)
+                        muestraArray();
+                    }
+                }
+            };
+            BeanManager.getInstance().startDiscovery(listener);
+            //setupGrafica();
+            Snackbar.make(vista, "Searching for devices ", Snackbar.LENGTH_LONG).setAction("Action", null).show();
+            //hiloPrueba();
+        }
+    }
+
+
+    public void muestraArray()
+    {
+        ListView listView=(ListView)findViewById(R.id.listView);
+        ArrayAdapter adapter=new ArrayAdapter(this,android.R.layout.simple_list_item_1,frijoles);
+        listView.setAdapter(adapter);
+    }
+
+
+    public void setupGrafica(){
+        setContentView(R.layout.activity_grafica_main);
+        toolbar = (Toolbar) findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -78,7 +304,6 @@ public class graficaMain extends AppCompatActivity
                         .setAction("Action", null).show();
             }
         });
-
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
                 this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
@@ -124,37 +349,22 @@ public class graficaMain extends AppCompatActivity
 
         YAxis rightAxis = mChart.getAxisRight();
         rightAxis.setEnabled(false);
-        DataBaseManager dbm=new DataBaseManager(getApplicationContext());
+        /*DataBaseManager dbm=new DataBaseManager(getApplicationContext());
         datos=dbm.actualizaVector();
-
-        /*new Thread(new Runnable() {
-
-            @Override
-            public void run() {
-                for(int i = 0; i < 100000; i++) {
-
-                    runOnUiThread(new Runnable() {
-
-                        @Override
-                        public void run() {
-                            addEntry(32);
-                        }
-                    });
-
-                    try {
-                        Thread.sleep(10);
-                    } catch (InterruptedException e) {
-                        // TODO Auto-generated catch block
-                        e.printStackTrace();
-                    }
-                }
-            }
-        }).start();*/
         hiloPro();
-        dibujante();
-
+        dibujante();*/
     }
 
+
+    public void calibra(View v){
+        Toast.makeText(getApplicationContext(),"Calibration beginning",Toast.LENGTH_SHORT).show();
+        bandCalibra=true;
+        if(bandConectado==true) {
+            String S = "C";
+            byte[] array = S.getBytes();
+            frijolMaster.sendSerialMessage(array);
+        }
+    }
 
     public void dibujante(){
         new CountDownTimer(500,T/2){
@@ -189,10 +399,11 @@ public class graficaMain extends AppCompatActivity
                 try{
                     for(int i=0;i<datos.size();i++) {
                         addEntry(datos.elementAt(i));
-
+                        if(i==20)
+                            break;
                     }
                 }catch(Exception e){
-                    cont=0;
+
                 }
                 DataBaseManager dbm=new DataBaseManager(getApplicationContext());
 
@@ -207,12 +418,16 @@ public class graficaMain extends AppCompatActivity
 
                         do {
                             bpm =Integer.parseInt(c.getString(0));
+
                             break;
                         } while (c.moveToNext());
                         Log.i("ProDatos", Integer.toString(bpm));
+
                         txt.setText(Integer.toString(bpm));
                         if(bpm<30 || bpm>140) {
-                            txt.setText("99%");
+
+                                                            txt.setText(Integer.toString(72));
+
                             /*Cursor c1 = dbm.db.rawQuery("SELECT SUM(Tiempo) FROM InformacionPorTiempos WHERE DATETIME(TiempoInsercion)>DATETIME('now','-5 seconds');", null);
                             int frec=0;
                             if (c1.moveToFirst()) {
@@ -227,6 +442,8 @@ public class graficaMain extends AppCompatActivity
                                     }else
                                         txt.setText(Integer.toString(bpm));
                                 }catch (Exception e){
+
+
                                     txt.setText("99%");
                                 }
 

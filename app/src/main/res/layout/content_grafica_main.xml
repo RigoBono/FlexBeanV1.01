@@ -37,6 +37,7 @@
             android:background="@drawable/azul"
             android:layout_gravity="center_horizontal" />
 
+
         <com.github.mikephil.charting.charts.LineChart
             android:id="@+id/chart1"
             android:layout_width="400dp"
@@ -58,6 +59,11 @@
             android:layout_height="wrap_content"
             android:id="@+id/imageView3"
             android:src="@drawable/advance"/>
+        <Button
+            android:layout_width="70dp"
+            android:layout_height="50dp"
+            android:onClick="calibra"
+            android:background="@drawable/calibration"/>
     </LinearLayout>
 
 

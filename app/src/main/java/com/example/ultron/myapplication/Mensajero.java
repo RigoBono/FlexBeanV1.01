@@ -21,11 +21,13 @@ public class Mensajero implements Runnable {
     public void run() {
 
         while(true){
+
+
             //Obtener datos
-            String prev="*10*";
+            /*String prev="*10*";
             for(int i=0;i<50;i++){
                 if(i==10)
-                    prev=prev+"700"+"|";
+                    prev=prev+"5"+"|";
                 else
                     prev=prev+"200"+"|";
             }
@@ -46,9 +48,9 @@ public class Mensajero implements Runnable {
             Log.i("TODO", Lectura + " " + LecturaA0 + " " + LecturaA1);
             DataBaseManager dbm=new DataBaseManager(contexto);
             if(dbm.cuentaDatos()>2000){
-                beanLectura bl=new beanLectura(contexto);
+                beanLectura bl=new beanLectura(contexto,dbm.limiteSup());
                 Lectura=Integer.toString(bl.BPM);
-                Log.i("Paso-la prueba","Paso");
+                Log.i("Paso-la prueba","Paso "+Lectura+" ok");
                 dbm.db.execSQL("INSERT INTO InformacionPorTiempos(Tiempo,LecturaA0,LecturaA1) VALUES('"+Lectura+"','"+LecturaA0+"','"+LecturaA1+"');");
                 dbm.db.close();
             }
@@ -57,7 +59,7 @@ public class Mensajero implements Runnable {
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
-            Log.i("Mensaje", Lectura);
+            Log.i("Mensaje", Lectura);*/
 
         }
     }

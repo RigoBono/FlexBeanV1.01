@@ -92,9 +92,12 @@ public class BeanPro {
 
     public int bpm(){
         int bpm=0;
+        DataBaseManager dbm=new DataBaseManager(contexto);
+        int umbral=dbm.limiteSup();
+        Log.i("Umbral",Integer.toString(umbral));
         for(int i=0;i<lec.size();i++)
         {
-            if(lec.elementAt(i).lectura>650){
+            if(lec.elementAt(i).lectura<35){
                 bpm++;
             }
             if(bpm==3)

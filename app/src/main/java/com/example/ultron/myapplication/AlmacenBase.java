@@ -54,7 +54,11 @@ public class AlmacenBase extends SQLiteOpenHelper {
                 "Dato INT," +
                 "TiempoInsercion TIMESTAMP DEFAULT CURRENT_TIMESTAMP);");
 
+        db.execSQL("CREATE TABLE LimitesSen(" +
+                "Limite INT);");
 
+
+        db.execSQL("INSERT INTO LimitesSen VALUES(15);");
         db.execSQL("INSERT INTO Usuario VALUES('Nombre',20,50,'mail@mail.com',1,30);");
         db.execSQL("INSERT INTO Estado VALUES('OUT','OUT','OUT','OUT','OUT','OUT','OUT');");
         db.execSQL("INSERT INTO Tipo VALUES(1);");
