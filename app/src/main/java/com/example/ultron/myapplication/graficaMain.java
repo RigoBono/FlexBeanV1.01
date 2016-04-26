@@ -132,6 +132,7 @@ public class graficaMain extends AppCompatActivity
                                     @Override
                                     public void onResult(DeviceInfo deviceInfo) { }
                                 });
+
                                 setupGrafica();
                                 /*Intent intent;
                                 intent = new Intent(getApplicationContext(), graficaMain.class);
@@ -161,6 +162,7 @@ public class graficaMain extends AppCompatActivity
                                         addEntry(Integer.parseInt(decoded));
                                         TextView txt=(TextView)findViewById(R.id.beatsSalida);
                                         txt.setText(decoded);
+                                        addEntry(Integer.parseInt(decoded));
                                         DataBaseManager dbm=new DataBaseManager(getApplicationContext());
                                         dbm.db.execSQL("INSERT INTO Informacion(Lectura) VALUES(" + decoded+ ");");
                                         Cursor c1=dbm.db.rawQuery("SELECT AVG(Lectura) FROM Informacion ORDER BY TiempoInsercion DESC LIMIT 10;", null);
@@ -177,7 +179,7 @@ public class graficaMain extends AppCompatActivity
                                         dbm.db.close();
                                         c1.close();
                                     }else{
-                                        Toast.makeText(getApplicationContext(),"Communication error",Toast.LENGTH_SHORT).show();
+                                        //Toast.makeText(getApplicationContext(),"Communication error",Toast.LENGTH_SHORT).show();
                                     }
                                 } catch (UnsupportedEncodingException e) {
                                     e.printStackTrace();
@@ -192,6 +194,7 @@ public class graficaMain extends AppCompatActivity
                         };
 
                         bean.connect(getApplicationContext(), beanListener);
+                        Snackbar.make(vista, "Connecting", Snackbar.LENGTH_LONG).setAction("Action", null).show();
                     }
                 });
             }
@@ -272,6 +275,7 @@ public class graficaMain extends AppCompatActivity
             //setupGrafica();
             Snackbar.make(vista, "Searching for devices ", Snackbar.LENGTH_LONG).setAction("Action", null).show();
             //hiloPrueba();
+            hilo();
         }
     }
 
